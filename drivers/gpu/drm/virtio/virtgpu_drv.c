@@ -146,7 +146,8 @@ static struct drm_driver driver = {
 	.ioctls = virtio_gpu_ioctls,
 	.num_ioctls = DRM_VIRTIO_NUM_IOCTLS,
 
-	.name = DRIVER_NAME,
+  //lmy: change to imx-drm
+	.name = "imx-drm",
 	.desc = DRIVER_DESC,
 	.date = DRIVER_DATE,
 	.major = DRIVER_MAJOR,

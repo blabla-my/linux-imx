@@ -31,6 +31,11 @@
 
 #include "virtgpu_drv.h"
 
+//lmy: include files for dpu
+
+#include <video/dpu.h>
+#include <drm/imx_drm.h>
+
 static void convert_to_hw_box(struct virtio_gpu_box *dst,
 			      const struct drm_virtgpu_3d_box *src)
 {
@@ -532,6 +537,27 @@ copy_exit:
 	return 0;
 }
 
+//lmy
+static int dummy_imx_drm_dpu_get_param_ioctl(struct drm_device *drm_dev, void *data,
+				       struct drm_file *file)
+{
+	enum drm_imx_dpu_param *param = data;
+	int ret;
+
+	switch (*param) {
+	case (DRM_IMX_MAX_DPUS):
+    // simply returns 1
+		ret = 1;
+		break;
+	default:
+		ret = -EINVAL;
+		DRM_ERROR("Unknown param![%d]\n", *param);
+		break;
+	}
+
+	return ret;
+}
+
 struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS] = {
 	DRM_IOCTL_DEF_DRV(VIRTGPU_MAP, virtio_gpu_map_ioctl,
 			  DRM_AUTH|DRM_UNLOCKED|DRM_RENDER_ALLOW),
@@ -563,4 +589,8 @@ struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS] = {
 
 	DRM_IOCTL_DEF_DRV(VIRTGPU_GET_CAPS, virtio_gpu_get_caps_ioctl,
 			  DRM_AUTH|DRM_UNLOCKED|DRM_RENDER_ALLOW),
+
+  //lmy: add dummy command for dpu 
+	DRM_IOCTL_DEF_DRV(IMX_DPU_GET_PARAM, dummy_imx_drm_dpu_get_param_ioctl,
+			DRM_RENDER_ALLOW),
 };
